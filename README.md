@@ -1,20 +1,20 @@
 # Privacy Preserving Disease Tracking
 
 ### DISCLAIMER:
-This protocol has not undergone thorough threatmodelling and review yet, but we are working on it. It is an open work in progress, since time is of the essence.
+This protocol has not undergone thorough threatmodelling and review yet, but we are working on it. It is an open work in progress, since time is of the essence. Feedback is welcome.
 
 ### Acronyms
-
 - BLE = Bluetooth Low Energy
 - PSI = Private Set Intersection
 - PID = Pseudonymous Identifier
 - N = # of days of incubation period
+- DB = Database
 
 ## Protocol Description
 - Every participant generates a new random PID per timeslot (e.g. every 10 minutes).
 - Each phone is running a BLE (or similar) beacon, broadcasting the current PID. If two devices come close to each other, they record each others PIDs and save these with a timestamp, locally on their device. This provides decorrelation of the application layer.
 - In case of a positive diagnosis for a participant, they publish the history of their PIDs. The PIDs of their contacts stay confidential.
-- Every day, every participant runs a PSI with the collected PIDs of their contacts from the last N days against the public database. (One database per day, from truncated timestamps of the PID histories.)
+- Every day, every participant runs a PSI with the collected PIDs of their contacts from the last N days against the DB. (One DB per day, from truncated timestamps of the PID histories.)
 - From the size of the intersection each users device can calculate a risk locally and recommend the user to get tested.
 - In case of a positive test outcome the user publishes their data and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
@@ -23,10 +23,9 @@ This protocol has not undergone thorough threatmodelling and review yet, but we 
 - Since people get incentivized to get tested before they become symptomatic, spread can be reduced.
 - Since the PIDs get rotated, local tracking/correlation by other potentially malicious participants gets impeded.
 
-## PSI primitive
-
+## PSI 
 The primitive that seems to be the most advanced at the moment, regarding performance and security against malicous users is
-[Mobile Private Contact Discovery at Scale](https://www.usenix.org/system/files/sec19-kales.pdf).
+[Mobile Private Contact Discovery at Scale](https://eprint.iacr.org/2019/517.pdf). ([Conference Version](https://www.usenix.org/system/files/sec19-kales.pdf))
 
 There exists an [implementation for android](https://github.com/contact-discovery).
 
@@ -41,9 +40,19 @@ we get 201.600.000 DB entries.
 
 These calculations are for 6 PIDs/hour.
 
-## Considerations
-- BLE has a range up to 10 Meters
+## Alternative Approach for Untrusted Database
+If it is acceptable to publish PID history, we could omit the PSI scheme. In this case, PIDs would be published in plaintext and clients would download the diffs, to do set intersection on their own devices. 
+Since it is preferable not having to trust the DB, we should aim to achieve this.
+
+## Threatmodel
+- Clients are assumed to be individually malicious, but not colluding at scale.
+- DB is assumed to be semi-honest.
+- We provide only application layer de-correlation. The OS is assumed to be trustworthy, and not recording the Bluetooth MACs.
+
+### Considerations
+- BLE has a range of up to 10 Meters
 
 ## TODO
-- Threatmodelling
-- Quantify Privacy Leakage
+- analyze privacy leakage for plaintext DB
+- achieve robustness against colluding clients
+- refine threatmodel
