@@ -26,11 +26,12 @@ This protocol has not undergone thorough threatmodelling and review yet, but we 
 ### Malicious Clients
 Possible ways for a malicious client to misbehave would be to forge/omit submissions to produce false positives and false negatives. If the PIDs are sufficiently long, the collision rate should low enough to produce few false positives in case of forged submission. Since this is an opt-in protocol, false negatives are identical to non-participation. 
 
-A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with a construction that only outputs the size (or non-emptiness) of an intersection, but not its elements.
+A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
 
 ### Other Layers
 - Bluetooth MAC rotation on the OS level could provide further de-correlation
-- Anonymous submission and anonymous download can further increase user privacy 
+- Anonymous submission and anonymous download can further increase user privacy
+- Health authorities could give out anonymous credentials for submission with test results if it seems feasible and necessary
 
 ## Privacy and Incentives
 - Only the history of PIDs of participants who were tested positive is published. Since this history is not correlated to location, and correlation to contact history happens only on users devices, neiter location, nor contact history is leaked to the server or non-contacts. This, together with voluntary participation, can increase buy-in from the population, leading to faster response time for testing larger groups. Since the health authorities will administer the tests, local statistics will also become more accurate.
@@ -38,7 +39,7 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 - Since the PIDs get rotated, local tracking/correlation by other potentially malicious participants gets impeded.
 
 ## Open Questions
-- Does a PSI with intersection size but not element disclosure exist?
+- Does a (weighted) intersection method exist, which hides the elements of the intersection, against a malicious attacker?
 - Which potential malicious user behavior did we miss?
 - Can we achieve robustness against colluding clients? (e.g. regarding location tracing)
 - Do we need rate limiting to prevent spam on the DB? Can we reduce false positives from forged submissions futher this way?
