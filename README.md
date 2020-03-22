@@ -7,52 +7,42 @@ This protocol has not undergone thorough threatmodelling and review yet, but we 
 - BLE = Bluetooth Low Energy
 - PSI = Private Set Intersection
 - PID = Pseudonymous Identifier
-- N = # of days of incubation period
+- N = # of days of incubation period (+ some margin)
 - DB = Database
 
 ## Protocol Description
 - Every participant generates a new random PID per timeslot (e.g. every 10 minutes).
-- Each phone is running a BLE (or similar) beacon, broadcasting the current PID. If two devices come close to each other, they record each others PIDs and save these with a timestamp, locally on their device. This provides decorrelation of the application layer.
-- In case of a positive diagnosis for a participant, they publish the history of their PIDs. The PIDs of their contacts stay confidential.
-- Every day, every participant runs a PSI with the collected PIDs of their contacts from the last N days against the DB. (One DB per day, from truncated timestamps of the PID histories.)
-- From the size of the intersection each users device can calculate a risk locally and recommend the user to get tested.
-- In case of a positive test outcome the user publishes their data and self quarantines. In case of a negative outcome, they continue running the above protocol.
-
-## Privacy and Incentives
-- Only the history of PIDs of participants who were tested positive is published. Since this history is not correlated to location, and not publically correlated to contact history, very little privacy leakage occurs. This, together with voluntary participation, can increase buy-in from the population, leading to faster response time for testing larger groups. Since the health authorities will administer the tests, local statistics will also become more accurate.
-- Since people get incentivized to get tested before they become symptomatic, spread can be reduced.
-- Since the PIDs get rotated, local tracking/correlation by other potentially malicious participants gets impeded.
-
-## PSI 
-The primitive that seems to be the most advanced at the moment, regarding performance and security against malicous users is
-[Mobile Private Contact Discovery at Scale](https://eprint.iacr.org/2019/517.pdf). ([Conference Version](https://www.usenix.org/system/files/sec19-kales.pdf))
-
-There exists an [implementation for android](https://github.com/contact-discovery).
-
-### Scalability
-- It takes 2.93 seconds on WiFi / 6.53 seconds on LTE and 6.07 MiB of data for
-1024 client contacts to be checked against a DB of 2^28 (268.435.456) entries.
-
-- With 144 PIDs/day or 2016/14 days at 6 PIDs/Hour and 100.000 active cases
-we get 201.600.000 DB entries.
-
-- 1024/6 would equal ~170 contact hours per day, or ~7 fulltime contacts.
-
-These calculations are for 6 PIDs/hour.
-
-## Alternative Approach for Untrusted Database
-If it is acceptable to publish PID history, we could omit the PSI scheme. In this case, PIDs would be published in plaintext and clients would download the diffs, to do set intersection on their own devices. 
-Since it is preferable not having to trust the DB, we should aim to achieve this.
+- Each phone is running a BLE (or similar) beacon, broadcasting the current PID. If two devices come close to each other, they record each others PIDs and save these with a timestamp, locally on their device.
+- In case of a positive diagnosis for a participant, they submit the history of their PIDs from the last N days to a public DB. The PIDs of their contacts do not leave their device.
+- Every participant regularly downloads the diffs from the DB and does a local intersection of their recorded history and the diffs.
+- From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
+- In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
 ## Threatmodel
 - Clients are assumed to be individually malicious, but not colluding at scale.
-- DB is assumed to be semi-honest.
-- We provide only application layer de-correlation. The OS is assumed to be trustworthy, and not recording the Bluetooth MACs.
+- The DB is assumed to be semi-honest.
+- We provide only application layer de-correlation. The OS is assumed to be trustworthy, e.g. not recording the Bluetooth MACs and we do not deal with transport for submission and download.
 
-### Considerations
-- BLE has a range of up to 10 Meters
+### Malicious Clients
+Possible ways for a malicious client to misbehave would be to forge/omit submissions to produce false positives and false negatives. If the PIDs are sufficiently long, the collision rate should low enough to produce few false positives in case of forged submission. Since this is an opt-in protocol, false negatives are identical to non-participation. 
 
-## TODO
-- analyze privacy leakage for plaintext DB
-- achieve robustness against colluding clients
-- refine threatmodel
+A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with a construction that only outputs the size (or non-emptiness) of an intersection, but not its elements.
+
+### Other Layers
+- Bluetooth MAC rotation on the OS level could provide further de-correlation
+- Anonymous submission and anonymous download can further increase user privacy 
+
+## Privacy and Incentives
+- Only the history of PIDs of participants who were tested positive is published. Since this history is not correlated to location, and correlation to contact history happens only on users devices, neiter location, nor contact history is leaked to the server or non-contacts. This, together with voluntary participation, can increase buy-in from the population, leading to faster response time for testing larger groups. Since the health authorities will administer the tests, local statistics will also become more accurate.
+- Since people get incentivized to get tested before they become symptomatic, spread can be reduced.
+- Since the PIDs get rotated, local tracking/correlation by other potentially malicious participants gets impeded.
+
+## Open Questions
+- Does a PSI with intersection size but not element disclosure exist?
+- Which potential malicious user behavior did we miss?
+- Can we achieve robustness against colluding clients? (e.g. regarding location tracing)
+- Do we need rate limiting to prevent spam on the DB? Can we reduce false positives from forged submissions futher this way?
+- Do we gain anything from anonymous submission of PIDs? (All at once, subsets, individual PIDs per circuit or on a mixnet)
+- Further analysis of privacy leakage from plaintext DB
+- BLE has a range of up to 10 Meters, can we get useful distance information and log it for each PID of a contact?
+
