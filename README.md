@@ -3,9 +3,14 @@
 ### DISCLAIMER:
 This protocol has not undergone thorough threatmodelling and review yet, but we are working on it. It is an open work in progress, since time is of the essence. Feedback is welcome.
 
+## Problem Statement
+We want to do privacy preserving contact tracing and notify users if they have come in contact with potentially infected people. This should happen in a way that is as privacy preserving as possible. We want to have the following properties:
+
+- The users should be able to learn if they got in touch with infected parties, ideally only that.
+- The server should not learn anything besides who is infected, ideally not even that.
+
 ### Acronyms
 - BLE = Bluetooth Low Energy
-- PSI = Private Set Intersection
 - PID = Pseudonymous Identifier
 - N = # of days of incubation period (+ some margin)
 - DB = Database
