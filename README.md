@@ -9,7 +9,7 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - The users should be able to learn if they got in touch with infected parties, ideally only that.
 - The server should not learn anything besides who is infected, ideally not even that.
 
-### Acronyms
+### Terminology
 - BLE = Bluetooth Low Energy
 - PID = Pseudonymous Identifier
 - N = # of days of incubation period (+ some margin)
@@ -23,6 +23,9 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
 - In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
+### Possible extensions
+- To exchange bandwidth for post-computation, a ratchet with pre- and post-generation capabilities could be used.
+
 ## Threatmodel
 - Clients are assumed to be individually malicious, but not colluding at scale.
 - The DB is assumed to be semi-honest.
@@ -35,6 +38,7 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 
 ### Other Layers
 - Bluetooth MAC rotation on the OS level could provide further de-correlation
+- BLE can exchange 26 bytes without establishing a connection (citation needed)
 - Anonymous submission and anonymous download can further increase user privacy
 - Health authorities could give out anonymous credentials for submission with test results if it seems feasible and necessary
 
@@ -42,6 +46,7 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 - Only the history of PIDs of participants who were tested positive is published. Since this history is not correlated to location, and correlation to contact history happens only on users devices, neiter location, nor contact history is leaked to the server or non-contacts. This, together with voluntary participation, can increase buy-in from the population, leading to faster response time for testing larger groups. Since the health authorities will administer the tests, local statistics will also become more accurate.
 - Since people get incentivized to get tested before they become symptomatic, spread can be reduced.
 - Since the PIDs get rotated, local tracking/correlation by other potentially malicious participants gets impeded.
+- This kind of soft, opt-in intervention is probably most useful for the long tail to monitor resurgences. To improve monitoring, the app could walk users through self diagnosis.
 
 ## Open Questions
 - Does a (weighted) intersection method exist, which hides the elements of the intersection, against a malicious attacker?
@@ -51,4 +56,3 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 - Do we gain anything from anonymous submission of PIDs? (All at once, subsets, individual PIDs per circuit or on a mixnet)
 - Further analysis of privacy leakage from plaintext DB
 - BLE has a range of up to 10 Meters, can we get useful distance information and log it for each PID of a contact?
-
