@@ -26,6 +26,9 @@ We want to do privacy preserving contact tracing and notify users if they have c
 ### Possible extensions
 - To exchange bandwidth for post-computation, a ratchet with pre- and post-generation capabilities could be used.
 
+### Risk assessment
+- Users could log distance (BLE ranging seems to be accurate up to 4 meters) and duration for each PID they see, to calculate risk on device after notification.
+
 ## Threatmodel
 - Clients are assumed to be individually malicious, but not colluding at scale.
 - The DB is assumed to be semi-honest.
