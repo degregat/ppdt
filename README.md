@@ -9,7 +9,7 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - The users should be able to learn if they got in touch with infected parties, ideally only that.
 - The server should not learn anything besides who is infected, ideally not even that.
 
-### Terminology
+### Acronyms
 - BLE = Bluetooth Low Energy
 - PID = Pseudonymous Identifier
 - N = # of days of incubation period (+ some margin)
