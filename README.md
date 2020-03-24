@@ -25,9 +25,10 @@ We want to do privacy preserving contact tracing and notify users if they have c
 
 ### Possible extensions
 - To exchange bandwidth for post-computation, a ratchet with pre- and post-generation capabilities could be used.
+- During contact, if the BLE constraints permit a connection, a keyexchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
 
 ### Risk assessment
-- Users could log distance (BLE ranging seems to be accurate up to 4 meters) and duration for each PID they see, to calculate risk on device after notification.
+- Users could log distance and duration for each PID they see, to calculate risk on device after notification.
 
 ## Threatmodel
 - Clients are assumed to be individually malicious, but not colluding at scale.
@@ -39,9 +40,13 @@ Possible ways for a malicious client to misbehave would be to forge/omit submiss
 
 A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
 
-### Other Layers
-- Bluetooth MAC rotation on the OS level could provide further de-correlation
+### BLE
+- connectionless approaches work with BLE 4, whereas connections require BLE 5
 - BLE can exchange 26 bytes without establishing a connection (citation needed)
+- BLE ranging seems to be accurate up to 4 meters (citation needed)
+- Bluetooth MAC rotation on the OS level could provide further de-correlation
+
+### Other layers
 - Anonymous submission and anonymous download can further increase user privacy
 - Health authorities could give out anonymous credentials for submission with test results if it seems feasible and necessary
 
