@@ -41,8 +41,8 @@ Possible ways for a malicious client to misbehave would be to forge/omit submiss
 A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
 
 ### BLE
-- connectionless approaches work with BLE 4, whereas connections require BLE 5
-- BLE can exchange 26 bytes without establishing a connection (citation needed)
+- BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
+- BLE up to version 4.2 seems to be more widely supported [source from 2017](https://www.androidauthority.com/android-oreo-vs-android-nougat-bluetooth-5-794699/)
 - BLE ranging seems to be accurate up to 4 meters (citation needed)
 - Bluetooth MAC rotation on the OS level could provide further de-correlation
 
