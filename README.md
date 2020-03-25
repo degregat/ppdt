@@ -24,8 +24,8 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
 ### Possible extensions
-- To exchange bandwidth for post-computation, a ratchet with pre- and post-generation capabilities could be used.
-- During contact, if the BLE constraints permit a connection, a keyexchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
+- To exchange bandwidth for post-computation, instead of random PIDs we could use a HMAC on a counter, truncate the output for PIDs and publish the secret in case of infection. This would correlate all IDs though.
+- During contact, if the BLE constraints permit a connection, a key exchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
 - If it seems to be neccessary to do (coarse) space-time bucketing for scalability, a PIR scheme could be used for fetching to hide the space-time traces from the server, since users might want to only query a subset of these buckets. To hide the space-time traces for submitting users, decorrelation from an anonymizer could be used.
 
 ### Risk assessment
