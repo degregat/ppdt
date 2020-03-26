@@ -3,6 +3,9 @@
 ### DISCLAIMER:
 This protocol has not undergone thorough threatmodelling and review yet, but we are working on it. It is an open work in progress, since time is of the essence. Feedback is welcome.
 
+## Other Proposals
+The approach of [CoEpi](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) is based on each user having a key pair, generating tokens that are handed by encrypting random nonces, signing reports and publishing their keypair for to decrypt the nonces.
+
 ## Problem Statement
 We want to do privacy preserving contact tracing and notify users if they have come in contact with potentially infected people. This should happen in a way that is as privacy preserving as possible. We want to have the following properties:
 
@@ -27,6 +30,9 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - To exchange bandwidth for post-computation, instead of random PIDs we could use a HMAC on a counter, truncate the output for PIDs and publish the secret in case of infection. This would correlate all IDs though.
 - During contact, if the BLE constraints permit a connection, a key exchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
 - If it seems to be neccessary to do (coarse) space-time bucketing for scalability, a PIR scheme could be used for fetching to hide the space-time traces from the server, since users might want to only query a subset of these buckets. To hide the space-time traces for submitting users, decorrelation from an anonymizer could be used.
+
+### Size of DB
+- Assuming 144*26 byte PIDs per day, N = 14 and 100.000 active cases, the DB will contain around 5 GB of data in total.
 
 ### Risk assessment
 - Users could log distance and duration for each PID they see, to calculate risk on device after notification.
