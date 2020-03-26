@@ -1,10 +1,14 @@
-# Privacy Preserving Disease Tracking
 
 ### DISCLAIMER:
 This protocol has not undergone thorough threatmodelling and review yet, but we are working on it. It is an open work in progress, since time is of the essence. Feedback is welcome.
 
 ## Other Proposals
 The approach of [CoEpi](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) is based on each user having a key pair, generating tokens that are handed by encrypting random nonces, signing reports and publishing their keypair for to decrypt the nonces.
+
+## Privacy Considerations
+A classification of the tradeoffs of different approaches can be found [here](https://arxiv.org/pdf/2003.11511.pdf)
+
+# Privacy Preserving Disease Tracking
 
 ## Problem Statement
 We want to do privacy preserving contact tracing and notify users if they have come in contact with potentially infected people. This should happen in a way that is as privacy preserving as possible. We want to have the following properties:
