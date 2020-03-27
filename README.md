@@ -2,7 +2,7 @@
 The approach of [CoEpi](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) is based on each user having a key pair, generating tokens that are handed by encrypting random nonces, signing reports and publishing their keypair to decrypt the nonces.
 
 ## Privacy Considerations
-A classification of the tradeoffs of different approaches can be found [here](https://arxiv.org/pdf/2003.11511.pdf).
+A classification of the tradeoffs of different approaches can be found in [1].
 
 # Privacy Preserving Disease Tracking
 
@@ -23,9 +23,9 @@ We want to do privacy preserving contact tracing and notify users if they have c
 
 ## Protocol Description
 - Every participant generates a new random PID per timeslot (e.g. every 10 minutes).
-- Each phone is running a BLE (or similar) beacon, broadcasting the current PID. If two devices come close to each other, they record each others PIDs and save these with a timestamp, locally on their device.
+- Each phone is running a BLE (or similar) beacon, broadcasting a hash of the current PID. If two devices come close to each other, they record each others hashed PIDs and save these with a timestamp, locally on their device.
 - In case of a positive diagnosis for a participant, they submit the history of their PIDs from the last N days to a public DB. The PIDs of their contacts do not leave their device.
-- Every participant regularly downloads the diffs from the DB and does a local intersection of their recorded history and the diffs.
+- Every participant regularly downloads the diffs from the DB, and does a local intersection of their recorded history and the hashed diffs.
 - From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
 - In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
@@ -45,10 +45,17 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - The DB is assumed to be semi-honest.
 - We provide only application layer de-correlation. The OS is assumed to be trustworthy, e.g. not recording the Bluetooth MACs and we do not deal with transport for submission and download.
 
+
+### Possible Attacks (Application Layer)
+- Linkage attacks: If a user correlates individuals to broadcasts they receive, they will be able to determine their infection status. Simplest case: A user is only near to one person for N days. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
+
+### Mitigated Attacks (Application Layer)
+- Impersonation: An attacker could upload the PIDs of users they meet. Mitigated by broadcasting hashes of PIDs.
+
 ### Malicious Clients
 Possible ways for a malicious client to misbehave would be to forge/omit submissions to produce false positives and false negatives. If the PIDs are sufficiently long, the collision rate should low enough to produce few false positives in case of forged submission. Since this is an opt-in protocol, false negatives are identical to non-participation. 
 
-A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
+A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. 
 
 ### BLE
 - BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
@@ -74,3 +81,6 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 - Do we gain anything from anonymous submission of PIDs? (All at once, subsets, individual PIDs per circuit or on a mixnet)
 - Further analysis of privacy leakage from plaintext DB
 - BLE has a range of up to 10 Meters, can we get useful distance information and log it for each PID of a contact?
+
+## Sources
+[1] [Contact Tracing Mobile Apps for COVID-19](https://arxiv.org/pdf/2003.11511.pdf)
