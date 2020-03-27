@@ -2,7 +2,7 @@
 The approach of [CoEpi](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) is based on each user having a key pair, generating tokens that are handed by encrypting random nonces, signing reports and publishing their keypair to decrypt the nonces.
 
 ## Privacy Considerations
-A classification of the tradeoffs of different approaches can be found in [1].
+A classification of the tradeoffs of different approaches can be found in [[1]](#source-1).
 
 # Privacy Preserving Disease Tracking
 
@@ -29,7 +29,7 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
 - In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
-This protocol falls into the "polling based" category of [1](#source-1).
+This protocol falls into the "polling based" category of [[1]](#source-1).
 
 ### Possible extensions
 - To exchange bandwidth for post-computation, instead of random PIDs we could use a HMAC on a counter, truncate the output for PIDs and publish the secret in case of infection. This would correlate all IDs though.
@@ -47,19 +47,27 @@ This protocol falls into the "polling based" category of [1](#source-1).
 - The DB is assumed to be semi-honest.
 - We provide only application layer de-correlation. The OS is assumed to be trustworthy, e.g. not recording the Bluetooth MACs and we do not deal with transport for submission and download.
 
+## Possible Attacks (Application Layer)
+### Linkage Attacks
+If a user correlates individuals to broadcasts they receive, they will be able to determine their infection status. Simplest case: A user is only near to one person for N days.
 
-### Possible Attacks (Application Layer)
-- Linkage attacks: If a user correlates individuals to broadcasts they receive, they will be able to determine their infection status. Simplest case: A user is only near to one person for N days. This might be mitigated with something like [Private Join and Compute](https://github.com/google/private-join-and-compute), but with malicious security.
+Possible mitigations:
+- Using the mixing technique from [[1]](#source-1). this would require the deployment of multiple, semi-honest mixing servers.
+- [Private Join and Compute](https://github.com/google/private-join-and-compute), but malicious security would be needed (theoretical).
+
+### Spam
+Users could upload forged submissions to cause congestion.
+
+Possible mitigations:
+- https://privacypass.github.io/ grants anonymous credentials for the solution of a captcha. Requires additional infrastructure, compatibility with the threatmodel needs to still be evaluated.
 
 ### Mitigated Attacks (Application Layer)
 - Impersonation: An attacker could upload the PIDs of users they meet. Mitigated by broadcasting hashes of PIDs.
+- Creating false positives: If a malicious users uploads random PIDs, the collision rate is low if the PID space is large enough.
+- Creating false negatives: Is equivalent to non-participation.
+- Local Tracing: PID rotation mitigates against non-colluding snoopers. Wether non-collusion is a sound assumption, still needs to be evaluated.
 
-### Malicious Clients
-Possible ways for a malicious client to misbehave would be to forge/omit submissions to produce false positives and false negatives. If the PIDs are sufficiently long, the collision rate should low enough to produce few false positives in case of forged submission. Since this is an opt-in protocol, false negatives are identical to non-participation. 
-
-A client could correlate PIDs to other users on sidechannels, to later look up which people are positive. 
-
-### BLE
+## BLE
 - BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
 - BLE up to version 4.2 seems to be more widely supported [source from 2017](https://www.androidauthority.com/android-oreo-vs-android-nougat-bluetooth-5-794699/)
 - BLE ranging seems to be accurate up to 4 meters (citation needed)
@@ -78,7 +86,7 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 ## Open Questions
 - Does a (weighted) intersection method exist, which hides the elements of the intersection, against a malicious attacker?
 - Which potential malicious user behavior did we miss?
-- Can we achieve robustness against colluding clients? (e.g. regarding location tracing)
+- Can we achieve robustness against colluding clients? (e.g. regarding location tracing).
 - Do we need rate limiting to prevent spam on the DB? Can we reduce false positives from forged submissions futher this way?
 - Do we gain anything from anonymous submission of PIDs? (All at once, subsets, individual PIDs per circuit or on a mixnet)
 - Further analysis of privacy leakage from plaintext DB
