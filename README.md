@@ -29,6 +29,8 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
 - In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
+This protocol falls into the "polling based" category of [1](#source-1).
+
 ### Possible extensions
 - To exchange bandwidth for post-computation, instead of random PIDs we could use a HMAC on a counter, truncate the output for PIDs and publish the secret in case of infection. This would correlate all IDs though.
 - During contact, if the BLE constraints permit a connection, a key exchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
@@ -83,4 +85,4 @@ A client could correlate PIDs to other users on sidechannels, to later look up w
 - BLE has a range of up to 10 Meters, can we get useful distance information and log it for each PID of a contact?
 
 ## Sources
-[1] [Contact Tracing Mobile Apps for COVID-19](https://arxiv.org/pdf/2003.11511.pdf)
+<a name="source-1">[1]</a> [Contact Tracing Mobile Apps for COVID-19](https://arxiv.org/pdf/2003.11511.pdf)
