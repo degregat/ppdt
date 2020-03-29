@@ -1,8 +1,13 @@
-## Other Proposals
-The approach of [CoEpi](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) is based on each user having a key pair, generating tokens that are handed by encrypting random nonces, signing reports and publishing their keypair to decrypt the nonces.
+## Similar Proposals
+- [Varia, Canetti, Herzberg, Trachtenberg](https://www.linkedin.com/pulse/controlling-covid-through-cellphones-ari-trachtenberg)
+- [Miers](https://twitter.com/secparam/status/1243369170621935616)
+- [CoEpi and covid-watch](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) want to achieve interoperability
 
 ## Privacy Considerations
 A classification of the tradeoffs of different approaches can be found in [[1]](#source-1).
+
+## Ideal Functionality
+A draft of [Anonymous Retroactive Broadcasts](https://gist.github.com/hdevalence/fefba3153b30e60537e84f7d2551b295). The protocol below (and most proposals above) does not implement the fetch phase, only single bit messages (confirmation of contact) are transmitted. (review wether other steps of IF are faithfully implemented in progress)
 
 # Privacy Preserving Disease Tracking
 
@@ -23,16 +28,17 @@ We want to do privacy preserving contact tracing and notify users if they have c
 
 ## Protocol Description
 - Every participant generates a new random PID per timeslot (e.g. every 10 minutes).
-- Each phone is running a BLE (or similar) beacon, broadcasting a hash of the current PID. If two devices come close to each other, they record each others hashed PIDs and save these with a timestamp, locally on their device.
+- Each phone is running a BLE (or similar) beacon, broadcasting a hash of the current PID. If two devices come close to each other, they record each others hashed PIDs and save these with a timestamp and distance estimation, locally on their device.
 - In case of a positive diagnosis for a participant, they submit the history of their PIDs from the last N days to a public DB. The PIDs of their contacts do not leave their device.
-- Every participant regularly downloads the diffs from the DB, and does a local intersection of their recorded history and the hashed diffs.
-- From the size of the intersection each users device can calculate a risk and recommend the user to get tested.
-- In case of a positive test outcome the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
+- Every participant regularly downloads the diffs from the DB, and does a local intersection of their recorded contact history and the hashed diffs.
+- From the intersection (weighed by times and distances) each users device can estimate a risk and notify the user/recommend a test.
+- In case of a positive test outcome/sufficiently high risk, the user publishes their PID history and self quarantines. In case of a negative outcome, they continue running the above protocol.
 
-This protocol falls into the "polling based" category of [[1]](#source-1).
+This protocol falls into the "public DB" category of [[1]](#source-1), but linkage by authorities is only possible in case of collusion with users.
 
 ### Possible extensions
 - To exchange bandwidth for post-computation, instead of random PIDs we could use a HMAC on a counter, truncate the output for PIDs and publish the secret in case of infection. This would correlate all IDs though, leading to more leakage against colluding adversaries (which we don't assume at the moment).
+- The (semi-honest) DB could hash the submitted PIDs, add them to a bloomfilter, and publish this to save bandwidth. Correct execution of the protocol on the server could be verified, by users checking wether their hashed PIDs are contained in the filter. In case of an error rate that is (much) higher than the natural estimated error rate of the bloom filter, the DB likely diverges from the protocol.
 - During contact, if the BLE constraints permit a connection, a key exchange can be perfomed. Messages encrypted with the resulting key can be appended to the published IDs.
 - If it seems to be neccessary to do (coarse) space-time bucketing for scalability, a PIR scheme could be used for fetching to hide the space-time traces from the server, since users might want to only query a subset of these buckets. To hide the space-time traces for submitting users, decorrelation from an anonymizer could be used.
 
@@ -68,10 +74,11 @@ Possible mitigations:
 - Local Tracing: PID rotation mitigates against non-colluding snoopers. Wether non-collusion is a sound assumption, still needs to be evaluated.
 
 ## BLE
-- BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
+- BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) (citation needed) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
 - BLE up to version 4.2 seems to be more widely supported [source from 2017](https://www.androidauthority.com/android-oreo-vs-android-nougat-bluetooth-5-794699/)
 - BLE ranging seems to be accurate up to 4 meters (citation needed)
-- Bluetooth MAC rotation on the OS level could provide further de-correlation
+- Connectionless is preferable because of wider support (citation needed)
+- Rotation of application layer and Bluetooth MAC should be harmonized to minimize leakage
 
 ### Other layers
 - Anonymous submission and anonymous download can further increase user privacy
