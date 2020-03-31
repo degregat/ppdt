@@ -71,6 +71,7 @@ Possible mitigations:
 ### Partially Mitigated Attacks
 - Impersonation: An attacker could upload the PIDs of users they meet. Is this sufficiently mitigated by broadcasting (Argon2) hashes of PIDs? Would a public rotating salt improve the situation? We do not want per client salts, to prevent correlation of PIDs. If this is deemed acceptable though, keyed schemes will have better tradeoffs.
 - Local Tracing: PID rotation mitigates against non-colluding snoopers.
+- Cloning: An adversary which collects PIDs and replays them to other users. They can at most produce as many false positives, as if they uploaded their own legitimate PIDs to the server without having symptoms or a positive test.
 
 ### Mitigated Attacks (Application Layer)
 - Creating false positives: If a malicious user uploads random PIDs, the collision rate is low if the PID space is large enough.
