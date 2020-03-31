@@ -1,8 +1,3 @@
-## Similar Proposals
-- [Varia, Canetti, Herzberg, Trachtenberg](https://www.linkedin.com/pulse/controlling-covid-through-cellphones-ari-trachtenberg)
-- [Miers](https://twitter.com/secparam/status/1243369170621935616)
-- [CoEpi and covid-watch](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) want to achieve interoperability
-
 ## Privacy Considerations
 A classification of the tradeoffs of different approaches can be found in [[1]](#source-1).
 
@@ -102,6 +97,11 @@ Possible mitigations:
 - Do we gain anything from anonymous submission of PIDs? (All at once, subsets, individual PIDs per circuit or on a mixnet)
 - Further analysis of privacy leakage from plaintext DB
 - BLE has a range of up to 10 Meters, can we get useful distance information and log it for each PID of a contact?
+
+## Similar Proposals
+- [Varia, Canetti, Herzberg, Trachtenberg](https://arxiv.org/pdf/2003.13670.pdf)
+- [Miers](https://twitter.com/secparam/status/1243369170621935616)
+- [CoEpi and covid-watch](https://docs.google.com/document/d/1f65V3PI214-uYfZLUZtm55kdVwoazIMqGJrxcYNI4eg/edit) want to achieve interoperability
 
 ## Sources
 <a name="source-1">[1]</a> [Contact Tracing Mobile Apps for COVID-19](https://arxiv.org/pdf/2003.11511.pdf)
