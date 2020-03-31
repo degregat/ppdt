@@ -25,6 +25,7 @@ We want to do privacy preserving contact tracing and notify users if they have c
 - PID = Pseudonymous Identifier
 - N = # of days of incubation period (+ some margin)
 - DB = Database
+- hash = should be a password hashing function e.g. a variant of Argon2
 
 ## Protocol Description
 - Every participant generates a new random PID per timeslot (e.g. every 10 minutes).
@@ -67,18 +68,20 @@ Users could upload forged submissions to cause congestion.
 Possible mitigations:
 - https://privacypass.github.io/ grants anonymous credentials for the solution of a captcha. Requires additional infrastructure, compatibility with the threatmodel needs to still be evaluated.
 
+### Partially Mitigated Attacks
+- Impersonation: An attacker could upload the PIDs of users they meet. Is this sufficiently mitigated by broadcasting (Argon2) hashes of PIDs? Would a public rotating salt improve the situation? We do not want per client salts, to prevent correlation of PIDs. If this is deemed acceptable though, keyed schemes will have better tradeoffs.
+- Local Tracing: PID rotation mitigates against non-colluding snoopers.
+
 ### Mitigated Attacks (Application Layer)
-- Impersonation: An attacker could upload the PIDs of users they meet. Mitigated by broadcasting hashes of PIDs.
-- Creating false positives: If a malicious users uploads random PIDs, the collision rate is low if the PID space is large enough.
+- Creating false positives: If a malicious user uploads random PIDs, the collision rate is low if the PID space is large enough.
 - Creating false negatives: Is equivalent to non-participation.
-- Local Tracing: PID rotation mitigates against non-colluding snoopers. Wether non-collusion is a sound assumption, still needs to be evaluated.
 
 ## BLE
 - BLE 4.2 can exchange 26 bytes without establishing a connection (31 bytes - 2 bytes company ID, 2 bytes fieldtype and 1 byte transmission power for ranging) (citation needed) [specs](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/08/10/extended_advertising-aEID)
 - BLE up to version 4.2 seems to be more widely supported [source from 2017](https://www.androidauthority.com/android-oreo-vs-android-nougat-bluetooth-5-794699/)
 - BLE ranging seems to be accurate up to 4 meters (citation needed)
 - Connectionless is preferable because of wider support (citation needed)
-- Rotation of application layer and Bluetooth MAC should be harmonized to minimize leakage
+- Rotation of application layer and Bluetooth MAC should be harmonized to minimize leakage and prevent [address-carryover attacks](#source-2). MAC rotation is bounded by the [platform](#source-2).
 
 ### Other layers
 - Anonymous submission and anonymous download can further increase user privacy
@@ -101,3 +104,4 @@ Possible mitigations:
 
 ## Sources
 <a name="source-1">[1]</a> [Contact Tracing Mobile Apps for COVID-19](https://arxiv.org/pdf/2003.11511.pdf)
+<a name="source-2">[2]</a> [Tracking Anonymized Bluetooth Devices](https://petsymposium.org/2019/files/papers/issue3/popets-2019-0036.pdf)
