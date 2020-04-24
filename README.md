@@ -1,3 +1,7 @@
+# TCN
+
+This work has been superseded by the [TCN protocol](https://github.com/TCNCoalition/TCN).
+
 ## Privacy Considerations
 A classification of the tradeoffs of different approaches can be found in [[1]](#source-1).
 
